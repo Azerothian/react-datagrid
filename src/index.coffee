@@ -2,55 +2,79 @@ React = require "react"
 {Table} = require "react-bootstrap"
 {div, thead, tbody, th, td, tr} = React.DOM
 
+debug = require("debug")("react-datagrid:debug")
 
-row = React.createClass {
+dataRow = React.createClass {
   getDefaultProps:->
     {
       columns: []
-      rowData: {}
-    }
-
-  render: ->
-    col = []
-    for column in @props.columns
-      props = {}
-      props = clone(column.props) if column.props?
-      props.value = row[column.ref] if row[column.ref]?
-      col.push td({}, column.element(props))
-
-    tr {}, columns
-
-}
-
-
-module.exports = React.createClass {
-  getDefaultProps:->
-    {
-      columns: []
-      minRowCount: 0
+      initRowData: {}
     }
   getInitialState: ->
     {
-      rowData: []
+      rowData: @props.initRowData || {}
     }
-  getData: ->
+
+  render: ->
+    cols = []
+    for column in @props.columns
+      props = {
+        ref: column.name
+        value: @state.rowData[column.name] if @state.rowData[column.name]?
+        onChange:
+      }
+      rowComponent = column.row
+      props = clone(rowComponent.props) if rowComponent.props?
+      props.
+      cols.push td({}, rowComponent.component(props))
+    tr {}, cols
+}
+
+
+
+
+module.exports = React.createClass {
+  addRow: ->
+    @setState {
+      rowData: [ { firstname: "test", lastname: "last" }]
+    }
+  getDefaultProps:->
+    {
+      columns: []
+      initRowCount: 0
+      initRowData: []
+    }
+  getInitialState: ->
+    {
+      rowData: @props.initRowData || []
+      rowCount: @props.initRowCount || 0
+    }
 
   render: ->
     @transferPropsTo Table {},
       thead {},
-        @props.template.map (element) ->
-          th {}, element.name
+        @props.columns.map (col) ->
+          th col.header.props || {}, col.header.text
       @createRows()
 
   createRows: ->
     rows = []
     if @state.rowData.length < 1
-      return "No Data Found"
-    for row in rowData
-      rows.push row { columns: @props.columns, rowData: row }
+      return tr {}, td { colSpan: @props.columns.length }, "No Data Found"
+
+    for i in [0...@state.rowData.length] by 1
+      row = @state.rowData[i] || {}
+      rows.push dataRow { columns: @props.columns, rowData: row }
     tbody {}, rows
 
+  componentWillUnmount: ->
+    #save existing data?
+
+
 }
+
+
+
 
 clone = (obj) ->
   if not obj? or typeof obj isnt 'object'

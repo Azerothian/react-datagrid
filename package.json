@@ -17,6 +17,7 @@
   },
   "homepage": "https://github.com/Azerothian/react-datagrid",
   "dependencies": {
+    "debug": "^1.0.4",
     "react": "^0.11.1",
     "react-bootstrap": "^0.11.1"
   },

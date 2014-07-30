@@ -33,7 +33,7 @@ module.exports = (grunt) ->
           'build/test/app.js': ['src/**/*.coffee']
         options:
           transform: ['coffeeify']
-          bundleOptions:
+          browserifyOptions:
             debug: true
             extensions: [".js", ".coffee"]
 
@@ -43,5 +43,5 @@ module.exports = (grunt) ->
   grunt.loadNpmTasks 'grunt-contrib-coffee'
   grunt.loadNpmTasks 'grunt-contrib-watch'
 
-  grunt.registerTask 'build', '', [ 'clean', 'coffee', 'copy', 'coffeeify'  ]
+  grunt.registerTask 'build', '', [ 'clean', 'coffee', 'copy', 'browserify'  ]
   grunt.registerTask 'default', '', [ 'build'  ]
